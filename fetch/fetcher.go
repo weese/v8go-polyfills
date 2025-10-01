@@ -33,8 +33,8 @@ import (
 	"strings"
 	"time"
 
-	"go.kuoruan.net/v8go-polyfills/fetch/internal"
-	. "go.kuoruan.net/v8go-polyfills/internal"
+	"github.com/weese/v8go-polyfills/fetch/internal"
+	. "github.com/weese/v8go-polyfills/internal"
 
 	"rogchap.com/v8go"
 )

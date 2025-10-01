@@ -23,7 +23,7 @@
 package main
 
 import (
-	"go.kuoruan.net/v8go-polyfills/console"
+	"github.com/weese/v8go-polyfills/console"
 	"rogchap.com/v8go"
 )
 

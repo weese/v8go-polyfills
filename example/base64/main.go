@@ -25,7 +25,7 @@ package main
 import (
 	"fmt"
 
-	"go.kuoruan.net/v8go-polyfills/base64"
+	"github.com/weese/v8go-polyfills/base64"
 	"rogchap.com/v8go"
 )
 

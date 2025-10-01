@@ -25,7 +25,7 @@ package timers
 import (
 	"errors"
 
-	"go.kuoruan.net/v8go-polyfills/timers/internal"
+	"github.com/weese/v8go-polyfills/timers/internal"
 	"rogchap.com/v8go"
 )
 

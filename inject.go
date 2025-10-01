@@ -23,12 +23,12 @@
 package polyfills
 
 import (
-	"go.kuoruan.net/v8go-polyfills/base64"
-	"go.kuoruan.net/v8go-polyfills/console"
-	"go.kuoruan.net/v8go-polyfills/fetch"
-	"go.kuoruan.net/v8go-polyfills/internal"
-	"go.kuoruan.net/v8go-polyfills/timers"
-	"go.kuoruan.net/v8go-polyfills/url"
+	"github.com/weese/v8go-polyfills/base64"
+	"github.com/weese/v8go-polyfills/console"
+	"github.com/weese/v8go-polyfills/fetch"
+	"github.com/weese/v8go-polyfills/internal"
+	"github.com/weese/v8go-polyfills/timers"
+	"github.com/weese/v8go-polyfills/url"
 
 	"rogchap.com/v8go"
 )

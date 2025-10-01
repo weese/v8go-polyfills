@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"time"
 
-	"go.kuoruan.net/v8go-polyfills/timers"
+	"github.com/weese/v8go-polyfills/timers"
 	"rogchap.com/v8go"
 )
 
