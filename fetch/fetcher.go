@@ -159,8 +159,9 @@ func (f *fetcher) initRequest(reqUrl string, reqInit internal.RequestInit) (*int
 		URL:  u,
 		Body: reqInit.Body,
 		Header: http.Header{
-			"Accept":     []string{"*/*"},
-			"Connection": []string{"close"},
+			"Accept":          []string{"*/*"},
+			"Accept-Encoding": []string{"gzip, deflate, br"},
+			"Connection":      []string{"close"},
 		},
 	}
 

@@ -23,12 +23,19 @@
 package internal
 
 import (
+	"compress/flate"
+	"compress/gzip"
+	"compress/zlib"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
+
+	"github.com/andybalholm/brotli"
 )
 
 /*
- Response keeps the *http.Response
+Response keeps the *http.Response
 */
 type Response struct {
 	Header     http.Header
@@ -41,11 +48,65 @@ type Response struct {
 }
 
 /*
- Handle the *http.Response, return *Response
+Handle the *http.Response, return *Response
 */
 func HandleHttpResponse(res *http.Response, url string, redirected bool) (*Response, error) {
 	defer res.Body.Close()
-	resBody, err := ioutil.ReadAll(res.Body)
+	var reader io.Reader = res.Body
+
+	// Support gzip, br (brotli), and deflate encodings
+	if encHeader := res.Header.Get("Content-Encoding"); encHeader != "" {
+		// Multiple encodings are applied in the order listed; we must decode in reverse
+		encodings := strings.Split(encHeader, ",")
+		// Trim spaces
+		for i := range encodings {
+			encodings[i] = strings.TrimSpace(strings.ToLower(encodings[i]))
+		}
+
+		// Track closers for readers that require closing (e.g., gzip/zlib/flate)
+		var closers []io.Closer
+		// Decode in reverse order
+		for i := len(encodings) - 1; i >= 0; i-- {
+			switch enc := encodings[i]; enc {
+			case "gzip":
+				gr, err := gzip.NewReader(reader)
+				if err != nil {
+					// If we fail to create a gzip reader, stop and return the error
+					return nil, err
+				}
+				reader = gr
+				closers = append(closers, gr)
+			case "br":
+				// brotli reader does not implement io.Closer
+				reader = brotli.NewReader(reader)
+			case "deflate":
+				// Try zlib-wrapped first (RFC1950), then raw deflate (RFC1951) as fallback
+				zr, err := zlib.NewReader(reader)
+				if err != nil {
+					fr := flate.NewReader(reader)
+					reader = fr
+					closers = append(closers, fr)
+				} else {
+					reader = zr
+					closers = append(closers, zr)
+				}
+			case "identity", "":
+				// no-op
+			default:
+				// Unknown encoding; leave as-is
+			}
+		}
+		// Ensure we close any layered readers after we are done reading
+		if len(closers) > 0 {
+			defer func() {
+				for _, c := range closers {
+					_ = c.Close()
+				}
+			}()
+		}
+	}
+
+	resBody, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return nil, err
 	}
